@@ -19,20 +19,18 @@ class _Dispatcher:
         self.registry = {}
 
     def dispatch(self, cls):
-        try:
-            from_reg = self.registry[cls]
-            yield from_reg
-        except KeyError:
-            from_reg = None
+        reg = self.registry.get(cls, ())
+        yield from reg
 
         for impl in self._find_impl(cls):
-            if from_reg and impl is from_reg:
+            if reg and impl in reg:
                 continue
             yield impl
 
 
     def register(self, cls, func):
-        self.registry[cls] = func
+        self.registry.setdefault(cls, []).append(func)
+        # fixme dups ?
 
     def _find_impl(self, cls):
         #TODO make _compose_mro a generator
@@ -46,7 +44,9 @@ class _Dispatcher:
                                   and not issubclass(match, t)):
                     raise RuntimeError("Ambiguous dispatch: {} or {}".format(
                         match, t))
-                yield registry.get(match)
+                f = registry.get(match)
+                if f:
+                    yield from f
                 continue
             if t in registry:
                 match = t

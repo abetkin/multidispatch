@@ -15,18 +15,24 @@ class Dispatcher:
         self._types[f] = typ
         self._sd.register(typ, f)
         cls = self.__class__
-        d = self._children.setdefault(typ, cls())
+
         if _types[1:]:
+            d = self._children.setdefault(typ, cls())
             d.register(f, _types[1:])
 
     def dispatch(self, types):
         typ = types[0]
+        types = types[1:]
         for match in self._sd.dispatch(typ):
             cls = self._types[match]
             child = self._children.get(cls)
             if not child:
+                assert not types
                 return match
-            ret = child.dispatch(types[1:])
+            'fixme'
+            if not types:
+                continue
+            ret = child.dispatch(types)
             if ret:
                 return ret
         # return default
