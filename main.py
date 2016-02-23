@@ -4,7 +4,6 @@ from . import _Dispatcher
 
 class Dispatcher:
 
-
     def __init__(self):
         self._types = {} # func -> type
         self._children = {} # type -> disp
@@ -29,8 +28,12 @@ class Dispatcher:
             if not child:
                 assert not types
                 return match
-            'fixme'
             if not types:
+                for items in child._sd.registry.values():
+                    if match in items:
+                        break
+                else:
+                    return match
                 continue
             ret = child.dispatch(types)
             if ret:

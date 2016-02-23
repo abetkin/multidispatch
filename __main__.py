@@ -30,7 +30,7 @@ class myint(int): pass
 dis = Dispatcher()
 dis.register(f, [str, int])
 dis.register(g, [int, int])
-dis.register(h, [str, int, int])
-ret = dis.dispatch([str, myint])
+# dis.register(h, [str, int, int])
+ret = dis.dispatch([myint, myint])
 'add test!'
 print(ret)
